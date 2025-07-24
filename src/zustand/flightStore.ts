@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { IFlightSearch, IFlightResult, IAirport } from '../models/flight-DTO';
+import { getPopularAirports } from '../services/mock-data';
 
 interface FlightState {
   searchParams: IFlightSearch | null;
@@ -27,7 +28,7 @@ export const useFlightStore = create<FlightStore>((set, get) => ({
   isLoading: false,
   error: null,
   recentSearches: [],
-  popularAirports: [],
+  popularAirports: getPopularAirports(),
 
   setSearchParams: params => set({ searchParams: params }),
 
