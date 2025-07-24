@@ -6,7 +6,16 @@ export type IconNames =
   | 'bell'
   | 'home'
   | 'user'
-  | 'cat';
+  | 'cat'
+  | 'calendar'
+  | 'plane'
+  | 'map-pin'
+  | 'loader'
+  | 'arrow-up-down'
+  | 'chevron-down'
+  | 'briefcase'
+  | 'arrow-left'
+  | 'search';
 
 export interface IconProps {
   testID?: string;

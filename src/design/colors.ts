@@ -18,6 +18,9 @@ export type IColor = {
   accentText: string;
   primaryText: string;
   opaqueSurface: string;
+  border: string;
+  text: string;
+  textSecondary: string;
   timelineHeaderColor?: string;
   timelineHeaderTextColor?: string;
 };
@@ -42,6 +45,9 @@ export const colors: IColor = {
   accentText: '#fff',
   primaryText: '#fff',
   opaqueSurface: '#f5f5f5cc',
+  border: '#E0E0E0',
+  text: '#000000',
+  textSecondary: '#666666',
 };
 
 export const darkColors: IColor = {
@@ -64,4 +70,7 @@ export const darkColors: IColor = {
   accentText: '#000',
   primaryText: '#000',
   opaqueSurface: '#1f1f1fcc',
+  border: '#333333',
+  text: '#ffffff',
+  textSecondary: '#cccccc',
 };

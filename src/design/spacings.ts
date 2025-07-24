@@ -5,6 +5,9 @@ type Spacing = {
   true: number;
   tiny: number;
   small: number;
+  medium: number;
+  large: number;
+  xlarge: number;
 };
 
 export const spacings: Spacing = {
@@ -14,4 +17,7 @@ export const spacings: Spacing = {
   true: 16,
   small: 8,
   tiny: 4,
+  medium: 12,
+  large: 20,
+  xlarge: 32,
 };

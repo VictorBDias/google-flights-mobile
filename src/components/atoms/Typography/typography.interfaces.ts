@@ -1,6 +1,16 @@
 import { TextProps } from 'react-native';
 
-export type TypographyVariants = 'regular' | 'title' | 'subTitle' | 'error';
+export type TypographyVariants =
+  | 'regular'
+  | 'title'
+  | 'subTitle'
+  | 'error'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'body'
+  | 'caption'
+  | 'label';
 
 export type TypographyAlignment = 'auto' | 'left' | 'right' | 'center';
 
