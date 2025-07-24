@@ -37,17 +37,17 @@ export default function Home() {
     clearError();
     setShowResults(true);
 
-    try {
-      const response = await getFlightsApi({
-        query: searchParams.origin,
-      });
+    console.log(searchParams);
 
-      console.log(response);
-      setSearchResults(response.flights);
-      addRecentSearch(searchParams);
+    try {
+      // const response = await getFlightsApi({
+      //   query: searchParams.origin,
+      // });
+      // setSearchResults(response.flights);
+      // addRecentSearch(searchParams);
     } catch (err) {
-      setError('Failed to search flights. Please try again.');
-      console.error('Search error:', err);
+      // setError('Failed to search flights. Please try again.');
+      // console.error('Search error:', err);
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,10 @@ export default function Home() {
       showsVerticalScrollIndicator={false}
     >
       {!showResults ? (
-        <FlightSearchForm onSearch={handleSearch} isLoading={isLoading} />
+        <FlightSearchForm
+          onSearch={() => console.log('search')}
+          isLoading={isLoading}
+        />
       ) : (
         <View style={styles.resultsContainer}>
           <View style={styles.resultsHeader}>

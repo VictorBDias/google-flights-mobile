@@ -22,7 +22,7 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.mobiletmp",
-      "jsEngine": "jsc"
+      "jsEngine": "hermes"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
