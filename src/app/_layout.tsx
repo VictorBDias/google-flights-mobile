@@ -36,7 +36,7 @@ export default function RootLayout() {
                   }}
                 >
                   <Header
-                    content="Hello, @VictorBDias"
+                    content="Google Flights"
                     avatar="https://i.pinimg.com/564x/ec/b3/d1/ecb3d1d08927b6cec14f34b4e3b19d2b.jpg"
                     sideElements={<Icon name="bell" />}
                     style={{

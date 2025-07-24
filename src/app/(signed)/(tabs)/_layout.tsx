@@ -33,17 +33,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home/index"
         options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => <Icon color={color} name="home" />,
+          tabBarLabel: 'Flights',
+          tabBarIcon: ({ color }) => <Icon color={color} name="plane" />,
         }}
       />
 
       <Tabs.Screen
-        name="slug/[slug]"
-        initialParams={{ slug: 'slug' }}
+        name="bookings/index"
         options={{
-          tabBarLabel: 'Slug',
-          tabBarIcon: ({ color }) => <Icon color={color} name="cat" />,
+          tabBarLabel: 'Bookings',
+          tabBarIcon: ({ color }) => <Icon color={color} name="calendar" />,
         }}
       />
 
