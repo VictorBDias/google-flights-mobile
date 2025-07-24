@@ -15,7 +15,8 @@ export type IconNames =
   | 'chevron-down'
   | 'briefcase'
   | 'arrow-left'
-  | 'search';
+  | 'search'
+  | 'x';
 
 export interface IconProps {
   testID?: string;

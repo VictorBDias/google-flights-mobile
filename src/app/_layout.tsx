@@ -12,7 +12,6 @@ import {
 import ThemeProvider from '@contexts/theme-provider';
 import '../unistyles';
 import { Header } from '@components/molecules';
-import { Icon } from '@components/atoms';
 import { spacings } from '@design/spacings';
 import { View } from 'react-native';
 import { colors } from '@design/colors';
@@ -36,9 +35,8 @@ export default function RootLayout() {
                   }}
                 >
                   <Header
-                    content="Google Flights"
+                    content="Victor Batisttete"
                     avatar="https://i.pinimg.com/564x/ec/b3/d1/ecb3d1d08927b6cec14f34b4e3b19d2b.jpg"
-                    sideElements={<Icon name="bell" />}
                     style={{
                       paddingHorizontal: spacings.regular,
                     }}

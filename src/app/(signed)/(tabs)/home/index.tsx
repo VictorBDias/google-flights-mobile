@@ -14,7 +14,7 @@ import { FlightSearchForm, FlightResultCard } from '@components/molecules';
 import { spacings } from '@design/spacings';
 import { useFlightStore } from '@zustand/flightStore';
 import { IFlightResult, IFlightSearch } from '@models/flight-DTO';
-import { getFlightsApi } from '@apis/air-scrapper/flights';
+import { searchFlightsApi } from '@apis/air-scrapper/flights';
 
 export default function Home() {
   const { colors } = useTheme();
@@ -40,14 +40,12 @@ export default function Home() {
     console.log(searchParams);
 
     try {
-      // const response = await getFlightsApi({
-      //   query: searchParams.origin,
-      // });
-      // setSearchResults(response.flights);
-      // addRecentSearch(searchParams);
+      const response = await searchFlightsApi(searchParams);
+      setSearchResults(response.flights);
+      addRecentSearch(searchParams);
     } catch (err) {
-      // setError('Failed to search flights. Please try again.');
-      // console.error('Search error:', err);
+      setError('Failed to search flights. Please try again.');
+      console.error('Search error:', err);
     } finally {
       setLoading(false);
     }
@@ -113,73 +111,76 @@ export default function Home() {
   );
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <>
       {!showResults ? (
-        <FlightSearchForm
-          onSearch={() => console.log('search')}
-          isLoading={isLoading}
-        />
+        <ScrollView
+          style={[styles.container, { backgroundColor: colors.background }]}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <FlightSearchForm onSearch={handleSearch} isLoading={isLoading} />
+        </ScrollView>
       ) : (
-        <View style={styles.resultsContainer}>
-          <View style={styles.resultsHeader}>
-            <Typography
-              variant="title"
-              style={[styles.resultsTitle, { color: colors.text }]}
-            >
-              Flight Results
-            </Typography>
-            <TouchableOpacity
-              onPress={handleNewSearch}
-              style={styles.backButton}
-            >
-              <Icon name="arrow-left" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          </View>
+        <View
+          style={[styles.container, { backgroundColor: colors.background }]}
+        >
+          <View style={styles.resultsContainer}>
+            <View style={styles.resultsHeader}>
+              <Typography
+                variant="title"
+                style={[styles.resultsTitle, { color: colors.text }]}
+              >
+                Flight Results
+              </Typography>
+              <TouchableOpacity
+                onPress={handleNewSearch}
+                style={styles.backButton}
+              >
+                <Icon name="arrow-left" size={24} color={colors.primary} />
+              </TouchableOpacity>
+            </View>
 
-          {/* Results count */}
-          {searchResults.length > 0 && (
-            <Typography
-              variant="regular"
-              style={[styles.resultsCount, { color: colors.textSecondary }]}
-            >
-              {searchResults.length} flights found
-            </Typography>
-          )}
-
-          {/* Error state */}
-          {error && renderError()}
-
-          {/* Loading state */}
-          {isLoading && (
-            <View style={styles.loadingContainer}>
-              <Icon name="loader" size={32} color={colors.primary} />
+            {/* Results count */}
+            {searchResults.length > 0 && (
               <Typography
                 variant="regular"
-                style={[styles.loadingText, { color: colors.textSecondary }]}
+                style={[styles.resultsCount, { color: colors.textSecondary }]}
               >
-                Searching for flights...
+                {searchResults.length} flights found
               </Typography>
-            </View>
-          )}
+            )}
 
-          {/* Results */}
-          {!isLoading && !error && (
-            <FlatList
-              data={searchResults}
-              renderItem={renderFlightResult}
-              keyExtractor={item => item.id}
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={renderEmptyResults}
-              contentContainerStyle={styles.resultsList}
-            />
-          )}
+            {/* Error state */}
+            {error && renderError()}
+
+            {/* Loading state */}
+            {isLoading && (
+              <View style={styles.loadingContainer}>
+                <Icon name="loader" size={32} color={colors.primary} />
+                <Typography
+                  variant="regular"
+                  style={[styles.loadingText, { color: colors.textSecondary }]}
+                >
+                  Searching for flights...
+                </Typography>
+              </View>
+            )}
+
+            {/* Results */}
+            {!isLoading && !error && (
+              <FlatList
+                data={searchResults}
+                renderItem={renderFlightResult}
+                keyExtractor={item => item.id}
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={renderEmptyResults}
+                contentContainerStyle={styles.resultsList}
+              />
+            )}
+          </View>
         </View>
       )}
-    </ScrollView>
+    </>
   );
 }
 

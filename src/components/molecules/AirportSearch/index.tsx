@@ -4,15 +4,21 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-  Text,
   StyleSheet,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { useTheme } from '@contexts/theme-provider';
 import { Typography } from '@components/atoms/Typography';
 import { Icon } from '@components/atoms/Icon';
 import { IAirport } from '../../../models/flight-DTO';
-import { flightsService } from '../../../services/flights-api';
 import { spacings } from '@design/spacings';
+import {
+  getFlightsApi,
+  getPopularAirportsApi,
+} from '@apis/air-scrapper/flights';
 
 interface AirportSearchProps {
   label: string;
@@ -33,6 +39,15 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
   const [airports, setAirports] = useState<IAirport[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [inputLayout, setInputLayout] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+
+  const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
     if (value.length >= 2) {
@@ -40,27 +55,30 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
     } else if (value.length === 0) {
       setAirports([]);
       setShowResults(false);
+    } else if (value.length === 1) {
+      loadPopularAirports();
     }
   }, [value]);
+
+  const loadPopularAirports = async () => {
+    try {
+      const popular = await getPopularAirportsApi();
+      setAirports(popular);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Failed to load popular airports:', error);
+    }
+  };
 
   const searchAirports = async (query: string) => {
     setIsSearching(true);
     try {
-      const results = await flightsService.searchAirports(query);
+      const results = await getFlightsApi({ query });
       setAirports(results);
       setShowResults(true);
     } catch (error) {
       console.error('Airport search failed:', error);
-      // Fallback to popular airports
-      const popular = await flightsService.getPopularAirports();
-      setAirports(
-        popular.filter(
-          airport =>
-            airport.code.toLowerCase().includes(query.toLowerCase()) ||
-            airport.city.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-      setShowResults(true);
+      await loadPopularAirports();
     } finally {
       setIsSearching(false);
     }
@@ -69,6 +87,25 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
   const handleSelectAirport = (airport: IAirport) => {
     onSelect(airport);
     onTextChange(`${airport.code} - ${airport.city}`);
+    setShowResults(false);
+    setIsFullScreen(false);
+  };
+
+  const handleInputLayout = (event: any) => {
+    const { x, y, width, height } = event.nativeEvent.layout;
+    setInputLayout({ x, y, width, height });
+  };
+
+  const handleInputFocus = () => {
+    setIsFullScreen(true);
+    setShowResults(true);
+    if (value.length === 0) {
+      loadPopularAirports();
+    }
+  };
+
+  const handleCloseFullScreen = () => {
+    setIsFullScreen(false);
     setShowResults(false);
   };
 
@@ -101,6 +138,107 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
     </TouchableOpacity>
   );
 
+  const renderFullScreenSearch = () => (
+    <Modal
+      visible={isFullScreen}
+      animationType="slide"
+      presentationStyle="fullScreen"
+    >
+      <SafeAreaView
+        style={[
+          styles.fullScreenContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.background}
+        />
+
+        <View
+          style={[
+            styles.fullScreenHeader,
+            { borderBottomColor: colors.border },
+          ]}
+        >
+          <TouchableOpacity
+            onPress={handleCloseFullScreen}
+            style={styles.closeButton}
+          >
+            <Icon name="x" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Typography
+            variant="regular"
+            style={[styles.fullScreenTitle, { color: colors.text }]}
+          >
+            {label}
+          </Typography>
+          <View style={styles.placeholderView} />
+        </View>
+
+        <View style={styles.fullScreenResultsContainer}>
+          {showResults && airports.length > 0 ? (
+            <FlatList
+              data={airports}
+              renderItem={renderAirportItem}
+              keyExtractor={item => item.code}
+              style={styles.fullScreenResultsList}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.fullScreenResultsContent}
+            />
+          ) : (
+            <View style={styles.emptyState}>
+              <Icon name="search" size={48} color={colors.textSecondary} />
+              <Typography
+                variant="regular"
+                style={[styles.emptyStateText, { color: colors.textSecondary }]}
+              >
+                Start typing to search airports
+              </Typography>
+            </View>
+          )}
+        </View>
+
+        <View
+          style={[
+            styles.fullScreenInputContainer,
+            { borderTopColor: colors.border },
+          ]}
+        >
+          <View
+            style={[
+              styles.fullScreenInputWrapper,
+              { borderColor: colors.border },
+            ]}
+          >
+            <Icon
+              name="map-pin"
+              size={20}
+              color={colors.textSecondary}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={[styles.fullScreenInput, { color: colors.text }]}
+              placeholder={placeholder}
+              placeholderTextColor={colors.textSecondary}
+              value={value}
+              onChangeText={onTextChange}
+              autoFocus={true}
+            />
+            {isSearching && (
+              <Icon
+                name="loader"
+                size={16}
+                color={colors.primary}
+                style={styles.loadingIcon}
+              />
+            )}
+          </View>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+
   return (
     <View style={styles.container}>
       <Typography
@@ -109,7 +247,10 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
       >
         {label}
       </Typography>
-      <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+      <View
+        style={[styles.inputContainer, { borderColor: colors.border }]}
+        onLayout={handleInputLayout}
+      >
         <Icon
           name="map-pin"
           size={20}
@@ -122,7 +263,7 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
           placeholderTextColor={colors.textSecondary}
           value={value}
           onChangeText={onTextChange}
-          onFocus={() => setShowResults(true)}
+          onFocus={handleInputFocus}
         />
         {isSearching && (
           <Icon
@@ -134,11 +275,17 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
         )}
       </View>
 
-      {showResults && airports.length > 0 && (
+      {showResults && airports.length > 0 && !isFullScreen && (
         <View
           style={[
             styles.resultsContainer,
-            { backgroundColor: colors.background, borderColor: colors.border },
+            {
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+              left: inputLayout.x,
+              top: inputLayout.y + inputLayout.height + 2,
+              width: inputLayout.width,
+            },
           ]}
         >
           <FlatList
@@ -150,6 +297,8 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
           />
         </View>
       )}
+
+      {renderFullScreenSearch()}
     </View>
   );
 };
@@ -157,7 +306,7 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    zIndex: 1,
+    zIndex: 9998,
   },
   label: {
     marginBottom: spacings.small,
@@ -183,14 +332,17 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
     borderWidth: 1,
     borderRadius: 8,
-    marginTop: 2,
     maxHeight: 200,
-    zIndex: 1000,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 10,
   },
   resultsList: {
     maxHeight: 200,
@@ -217,5 +369,66 @@ const styles = StyleSheet.create({
   },
   airportLocation: {
     fontSize: 12,
+  },
+  // Full screen styles
+  fullScreenContainer: {
+    flex: 1,
+  },
+  fullScreenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacings.regular,
+    paddingVertical: spacings.medium,
+    borderBottomWidth: 1,
+  },
+  closeButton: {
+    padding: spacings.small,
+  },
+  fullScreenTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  placeholderView: {
+    width: 40,
+  },
+  fullScreenResultsContainer: {
+    flex: 1,
+  },
+  fullScreenResultsList: {
+    flex: 1,
+  },
+  fullScreenResultsContent: {
+    paddingBottom: spacings.large,
+  },
+  fullScreenInputContainer: {
+    paddingHorizontal: spacings.regular,
+    paddingVertical: spacings.medium,
+    borderTopWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  },
+  fullScreenInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: spacings.regular,
+    paddingVertical: spacings.medium,
+    backgroundColor: 'white',
+  },
+  fullScreenInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacings.large,
+  },
+  emptyStateText: {
+    marginTop: spacings.medium,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
