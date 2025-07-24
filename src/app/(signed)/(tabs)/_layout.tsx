@@ -39,14 +39,6 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="bookings/index"
-        options={{
-          tabBarLabel: 'Bookings',
-          tabBarIcon: ({ color }) => <Icon color={color} name="calendar" />,
-        }}
-      />
-
-      <Tabs.Screen
         name="profile/index"
         options={{
           tabBarLabel: 'Profile',

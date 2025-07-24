@@ -7,6 +7,15 @@ import {
   Home,
   User,
   Cat,
+  Calendar,
+  Plane,
+  MapPin,
+  Loader,
+  ArrowUpDown,
+  ChevronDown,
+  Briefcase,
+  ArrowLeft,
+  Search,
 } from '@tamagui/lucide-icons';
 
 export const Icon = ({ color, name, size = 20, style, testID }: IconProps) => {
@@ -25,6 +34,24 @@ export const Icon = ({ color, name, size = 20, style, testID }: IconProps) => {
       return <User {...props} />;
     case 'cat':
       return <Cat {...props} />;
+    case 'calendar':
+      return <Calendar {...props} />;
+    case 'plane':
+      return <Plane {...props} />;
+    case 'map-pin':
+      return <MapPin {...props} />;
+    case 'loader':
+      return <Loader {...props} />;
+    case 'arrow-up-down':
+      return <ArrowUpDown {...props} />;
+    case 'chevron-down':
+      return <ChevronDown {...props} />;
+    case 'briefcase':
+      return <Briefcase {...props} />;
+    case 'arrow-left':
+      return <ArrowLeft {...props} />;
+    case 'search':
+      return <Search {...props} />;
 
     default:
       return <AlertCircle {...props} />;

@@ -14,7 +14,7 @@ import { FlightSearchForm, FlightResultCard } from '@components/molecules';
 import { spacings } from '@design/spacings';
 import { useFlightStore } from '@zustand/flightStore';
 import { IFlightResult, IFlightSearch } from '@models/flight-DTO';
-import { flightsService } from '@services/flights-api';
+import { getFlightsApi } from '@apis/air-scrapper/flights';
 
 export default function Home() {
   const { colors } = useTheme();
@@ -38,7 +38,11 @@ export default function Home() {
     setShowResults(true);
 
     try {
-      const response = await flightsService.searchFlights(searchParams);
+      const response = await getFlightsApi({
+        query: searchParams.origin,
+      });
+
+      console.log(response);
       setSearchResults(response.flights);
       addRecentSearch(searchParams);
     } catch (err) {
@@ -118,7 +122,6 @@ export default function Home() {
         <FlightSearchForm onSearch={handleSearch} isLoading={isLoading} />
       ) : (
         <View style={styles.resultsContainer}>
-          {/* Header with back button */}
           <View style={styles.resultsHeader}>
             <Typography
               variant="title"

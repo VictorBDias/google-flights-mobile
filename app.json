@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "mobile-tmp",
-    "slug": "mobile-tmp",
+    "name": "flights-mobile",
+    "slug": "flights-mobile",
     "jsEngine": "hermes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "scheme": "mobile-tmp",
+    "scheme": "flights-mobile",
     "experiments": {
       "tsconfigPaths": true,
       "typedRoutes": true

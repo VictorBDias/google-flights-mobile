@@ -1,8 +1,8 @@
 {
   "project_info": {
     "project_number": "961483420752",
-    "project_id": "mobile-tmp",
-    "storage_bucket": "mobile-tmp.appspot.com"
+    "project_id": "flights-mobile",
+    "storage_bucket": "flights-mobile.appspot.com"
   },
   "client": [
     {
