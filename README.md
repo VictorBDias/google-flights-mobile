@@ -77,9 +77,3 @@ src/
 | [![Victor Batisttete Dias](https://avatars.githubusercontent.com/u/30843291?size=100)](https://github.com/victorbdias) |
 | ---------------------------------------------------------------------------------------------------------------------- |
 | [VictorBDias](https://github.com/victorbdias)                                                                          |
-
----
-
-<div align="center">
-  <p>author <a href="https://github.com/victorbdias">VictorBDias</a></p>
-</div>
