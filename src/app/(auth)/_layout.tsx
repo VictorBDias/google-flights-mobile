@@ -13,7 +13,7 @@ export default function AuthLayout() {
       style={{
         backgroundColor: colors.background,
         height: '100%',
-        paddingTop: insets.top + spacings.regular,
+        paddingTop: insets.top,
       }}
     >
       <Stack

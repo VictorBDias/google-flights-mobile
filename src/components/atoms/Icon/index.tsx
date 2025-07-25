@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   Search,
   X,
+  LogOut,
 } from '@tamagui/lucide-icons';
 
 export const Icon = ({ color, name, size = 20, style, testID }: IconProps) => {
@@ -55,7 +56,8 @@ export const Icon = ({ color, name, size = 20, style, testID }: IconProps) => {
       return <Search {...props} />;
     case 'x':
       return <X {...props} />;
-
+    case 'logout':
+      return <LogOut {...props} />;
     default:
       return <AlertCircle {...props} />;
   }

@@ -1,4 +1,8 @@
-import api from '@services/api';
+import { mockSignIn, SignInData, AuthResponse } from '@services/mock-auth';
 
-export const signInAPi = ({ uid, password }: any): any =>
-  api.post('/login', { uid, password });
+export const signInAPi = async ({
+  uid,
+  password,
+}: SignInData): Promise<AuthResponse> => {
+  return await mockSignIn({ uid, password });
+};

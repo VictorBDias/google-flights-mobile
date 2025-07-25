@@ -23,6 +23,6 @@ export default function SignedLayout() {
   if (!isLogged) {
     return <Redirect href="/(auth)/sign-in" />;
   } else {
-    return <Redirect href="/(signed)/home" />;
+    return <Redirect href="/(signed)/(tabs)/home" />;
   }
 }

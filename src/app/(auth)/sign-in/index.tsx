@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { AuthValidator, authValidator } from '@validations/auth';
 import { useAuth } from '@contexts/auth-provider';
 import { spacings } from '@design/spacings';
 import { Button } from '@components/atoms/Button';
 import { FormInput } from '@components/atoms/FormInput';
-import { signInAPi } from '@apis/auth/sign-in';
+import { Typography } from '@components/atoms/Typography';
 import { Form } from 'tamagui';
 import { createStyleSheet, useStyles } from 'react-native-unistyles';
 
@@ -27,14 +27,17 @@ export default function SignInScreen() {
   const isLoading = status === 'pending' && isSubmitting;
 
   const onSubmit = handleSubmit(async ({ uid, password }) => {
-    const result = await signInAPi({
-      uid,
-      password,
-    });
-    if (result) {
-      router.push('/(signed)/home');
+    try {
+      await login({ uid, password });
+      // Navigation will be handled automatically by the auth state change
+    } catch (error) {
+      console.error('Sign in failed:', error);
     }
   });
+
+  const handleSignUpPress = () => {
+    router.push('/(auth)/sign-up');
+  };
 
   return (
     <View style={styles.container}>
@@ -42,8 +45,8 @@ export default function SignInScreen() {
         <FormInput
           control={control}
           name={'uid'}
-          label={'Uid'}
-          placeholder={'Input you uid'}
+          label={'User ID or Email'}
+          placeholder={'Enter your user ID or email'}
           required={true}
           errors={errors.uid}
           errorMessage={errors.uid?.message}
@@ -52,11 +55,12 @@ export default function SignInScreen() {
           control={control}
           name={'password'}
           label={'Password'}
-          placeholder={'Input you password'}
+          placeholder={'Enter your password'}
           required={true}
           errors={errors.password}
           errorMessage={errors.password?.message}
           style={{ marginTop: spacings.regular }}
+          type="password"
         />
 
         <Form.Trigger asChild>
@@ -68,6 +72,17 @@ export default function SignInScreen() {
           />
         </Form.Trigger>
       </Form>
+
+      <View style={styles.signUpContainer}>
+        <Typography variant="regular" style={styles.signUpText}>
+          Don't have an account?
+        </Typography>
+        <TouchableOpacity onPress={handleSignUpPress}>
+          <Typography variant="regular" style={styles.signUpLink}>
+            Sign Up
+          </Typography>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -82,5 +97,26 @@ const stylesheet = createStyleSheet(theme => ({
     padding: spacings.big,
     gap: spacings.regular,
     backgroundColor: theme.colors.background,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: spacings.large,
+    textAlign: 'center',
+    color: theme.colors.text,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacings.large,
+    gap: spacings.small,
+  },
+  signUpText: {
+    color: theme.colors.textSecondary,
+  },
+  signUpLink: {
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
 }));

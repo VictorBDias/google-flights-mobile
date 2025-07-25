@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Slot } from 'expo-router';
+import { router, Slot } from 'expo-router';
 import AuthProvider from '../contexts/auth-provider';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@translations/i18n';
@@ -13,12 +13,75 @@ import ThemeProvider from '@contexts/theme-provider';
 import '../unistyles';
 import { Header } from '@components/molecules';
 import { spacings } from '@design/spacings';
-import { View } from 'react-native';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import { colors } from '@design/colors';
+import { useAuth } from '@contexts/auth-provider';
+import { Spinner } from 'tamagui';
+import { Icon } from '@components/atoms';
+
+function AppContent() {
+  const insets = useSafeAreaInsets();
+  const { isLogged, isLoading, user, logout } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          backgroundColor: colors.background,
+          height: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Spinner size="large" />
+      </View>
+    );
+  }
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          logout();
+          router.push('/(auth)/sign-in');
+        },
+      },
+    ]);
+  };
+
+  return (
+    <View
+      style={{
+        backgroundColor: colors.background,
+        height: '100%',
+        paddingTop: insets.top + spacings.regular,
+      }}
+    >
+      {isLogged && user && (
+        <Header
+          content={user.name}
+          avatar={user.avatar}
+          sideElements={
+            <TouchableOpacity onPress={handleLogout}>
+              <Icon name="logout" />
+            </TouchableOpacity>
+          }
+          style={{
+            paddingHorizontal: spacings.regular,
+          }}
+        />
+      )}
+
+      <Slot />
+    </View>
+  );
+}
 
 export default function RootLayout() {
   const queryClient = new QueryClient();
-  const insets = useSafeAreaInsets();
 
   return (
     <TamaguiProvider config={tamaguiConfig}>
@@ -27,23 +90,7 @@ export default function RootLayout() {
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <SafeAreaProvider>
-                <View
-                  style={{
-                    backgroundColor: colors.background,
-                    height: '100%',
-                    paddingTop: insets.top + spacings.regular,
-                  }}
-                >
-                  <Header
-                    content="Victor Batisttete"
-                    avatar="https://i.pinimg.com/564x/ec/b3/d1/ecb3d1d08927b6cec14f34b4e3b19d2b.jpg"
-                    style={{
-                      paddingHorizontal: spacings.regular,
-                    }}
-                  />
-
-                  <Slot />
-                </View>
+                <AppContent />
               </SafeAreaProvider>
             </AuthProvider>
           </QueryClientProvider>

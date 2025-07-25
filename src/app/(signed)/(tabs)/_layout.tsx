@@ -37,14 +37,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Icon color={color} name="plane" />,
         }}
       />
-
-      <Tabs.Screen
-        name="profile/index"
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color }) => <Icon color={color} name="user" />,
-        }}
-      />
     </Tabs>
   );
 }

@@ -16,7 +16,8 @@ export type IconNames =
   | 'briefcase'
   | 'arrow-left'
   | 'search'
-  | 'x';
+  | 'x'
+  | 'logout';
 
 export interface IconProps {
   testID?: string;
