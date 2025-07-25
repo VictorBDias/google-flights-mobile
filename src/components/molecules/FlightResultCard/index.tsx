@@ -27,11 +27,9 @@ export const FlightResultCard: React.FC<FlightResultCardProps> = ({
   };
 
   const formatDuration = (duration: string) => {
-    // If duration is already formatted, return as is
     if (duration.includes('h') || duration.includes('m')) {
       return duration;
     }
-    // Try to parse as minutes
     const durationMinutes = parseInt(duration, 10);
     if (isNaN(durationMinutes)) {
       return duration;
@@ -62,7 +60,6 @@ export const FlightResultCard: React.FC<FlightResultCardProps> = ({
       ]}
       onPress={() => onSelect(flight)}
     >
-      {/* Airline and Flight Info */}
       <View style={styles.header}>
         <View style={styles.airlineInfo}>
           <Typography
@@ -94,7 +91,6 @@ export const FlightResultCard: React.FC<FlightResultCardProps> = ({
         </View>
       </View>
 
-      {/* Flight Route */}
       <View style={styles.routeContainer}>
         <View style={styles.departure}>
           <Typography
@@ -171,7 +167,6 @@ export const FlightResultCard: React.FC<FlightResultCardProps> = ({
         </View>
       </View>
 
-      {/* Additional Info */}
       <View style={styles.footer}>
         <View style={styles.additionalInfo}>
           <View style={styles.infoItem}>

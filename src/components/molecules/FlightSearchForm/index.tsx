@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Switch,
+  Modal,
+  SafeAreaView,
+  StatusBar,
+  FlatList,
+} from 'react-native';
 import { useTheme } from '@contexts/theme-provider';
 import { Typography } from '@components/atoms/Typography';
 import { Button } from '@components/atoms/Button';
@@ -17,6 +26,132 @@ interface FlightSearchFormProps {
   isLoading?: boolean;
 }
 
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+interface DropdownProps {
+  label: string;
+  value: string;
+  options: DropdownOption[];
+  onSelect: (value: string) => void;
+  placeholder?: string;
+}
+
+const Dropdown: React.FC<DropdownProps> = ({
+  label,
+  value,
+  options,
+  onSelect,
+  placeholder = 'Select an option',
+}) => {
+  const { colors } = useTheme();
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const selectedOption = options.find(option => option.value === value);
+
+  const handleSelect = (selectedValue: string) => {
+    onSelect(selectedValue);
+    setIsFullScreen(false);
+  };
+
+  const handleCloseFullScreen = () => {
+    setIsFullScreen(false);
+  };
+
+  const renderOption = ({ item }: { item: DropdownOption }) => (
+    <TouchableOpacity
+      style={[styles.dropdownOption, { borderBottomColor: colors.border }]}
+      onPress={() => handleSelect(item.value)}
+    >
+      <Typography
+        variant="regular"
+        style={[styles.dropdownOptionText, { color: colors.text }]}
+      >
+        {item.label}
+      </Typography>
+    </TouchableOpacity>
+  );
+
+  const renderFullScreenDropdown = () => (
+    <Modal
+      visible={isFullScreen}
+      animationType="slide"
+      presentationStyle="fullScreen"
+    >
+      <SafeAreaView
+        style={[
+          styles.fullScreenContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.background}
+        />
+
+        <View
+          style={[
+            styles.fullScreenHeader,
+            { borderBottomColor: colors.border },
+          ]}
+        >
+          <TouchableOpacity
+            onPress={handleCloseFullScreen}
+            style={styles.closeButton}
+          >
+            <Icon name="x" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Typography
+            variant="regular"
+            style={[styles.fullScreenTitle, { color: colors.text }]}
+          >
+            {label}
+          </Typography>
+          <View style={styles.placeholderView} />
+        </View>
+
+        <View style={styles.fullScreenResultsContainer}>
+          <FlatList
+            data={options}
+            renderItem={renderOption}
+            keyExtractor={item => item.value}
+            style={styles.fullScreenResultsList}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.fullScreenResultsContent}
+          />
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+
+  return (
+    <View style={styles.dropdownContainer}>
+      <Typography
+        variant="regular"
+        style={[styles.label, { color: colors.text }]}
+      >
+        {label}
+      </Typography>
+      <TouchableOpacity
+        style={[styles.dropdownSelector, { borderColor: colors.border }]}
+        onPress={() => setIsFullScreen(true)}
+      >
+        <Typography
+          variant="regular"
+          style={[styles.dropdownValue, { color: colors.text }]}
+        >
+          {selectedOption?.label || placeholder}
+        </Typography>
+        <Icon name="chevron-down" size={16} color={colors.textSecondary} />
+      </TouchableOpacity>
+
+      {renderFullScreenDropdown()}
+    </View>
+  );
+};
+
 export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   onSearch,
   isLoading = false,
@@ -29,7 +164,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [adults, setAdults] = useState(1);
   const [cabinClass, setCabinClass] = useState('economy');
-  const [showCabinOptions, setShowCabinOptions] = useState(false);
 
   const handleOriginSelect = (airport: IAirport) => {
     setOrigin(airport.code);
@@ -98,7 +232,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         Find Your Flight
       </Typography>
 
-      {/* Trip Type Toggle */}
       <View style={styles.tripTypeContainer}>
         <Typography
           variant="regular"
@@ -233,60 +366,15 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         </View>
       )}
 
-      {/* Cabin Class Selection */}
+      {/* Cabin Class Dropdown */}
       <View style={styles.cabinContainer}>
-        <TouchableOpacity
-          style={[styles.cabinSelector, { borderColor: colors.border }]}
-          onPress={() => setShowCabinOptions(!showCabinOptions)}
-        >
-          <Typography
-            variant="regular"
-            style={[styles.label, { color: colors.text }]}
-          >
-            Cabin Class
-          </Typography>
-          <Typography
-            variant="regular"
-            style={[styles.cabinValue, { color: colors.text }]}
-          >
-            {CABIN_CLASSES.find(c => c.value === cabinClass)?.label ||
-              'Economy'}
-          </Typography>
-          <Icon name="chevron-down" size={16} color={colors.textSecondary} />
-        </TouchableOpacity>
-
-        {showCabinOptions && (
-          <View
-            style={[
-              styles.cabinOptions,
-              {
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            {CABIN_CLASSES.map(cabin => (
-              <TouchableOpacity
-                key={cabin.value}
-                style={[
-                  styles.cabinOption,
-                  { borderBottomColor: colors.border },
-                ]}
-                onPress={() => {
-                  setCabinClass(cabin.value);
-                  setShowCabinOptions(false);
-                }}
-              >
-                <Typography
-                  variant="regular"
-                  style={[styles.cabinOptionText, { color: colors.text }]}
-                >
-                  {cabin.label}
-                </Typography>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+        <Dropdown
+          label="Cabin Class"
+          value={cabinClass}
+          options={CABIN_CLASSES}
+          onSelect={setCabinClass}
+          placeholder="Select cabin class"
+        />
       </View>
 
       {/* Search Button */}
@@ -357,9 +445,12 @@ const styles = StyleSheet.create({
   },
   cabinContainer: {
     marginBottom: spacings.large,
+  },
+  // Dropdown styles
+  dropdownContainer: {
     position: 'relative',
   },
-  cabinSelector: {
+  dropdownSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -368,28 +459,48 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacings.regular,
     paddingVertical: spacings.medium,
   },
-  cabinValue: {
+  dropdownValue: {
     flex: 1,
-    textAlign: 'right',
-    marginRight: spacings.small,
   },
-  cabinOptions: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 2,
-    zIndex: 1000,
-  },
-  cabinOption: {
+  dropdownOption: {
     paddingHorizontal: spacings.regular,
     paddingVertical: spacings.medium,
     borderBottomWidth: 1,
   },
-  cabinOptionText: {
+  dropdownOptionText: {
     textAlign: 'center',
+    fontSize: 16,
+  },
+  // Full screen dropdown styles
+  fullScreenContainer: {
+    flex: 1,
+  },
+  fullScreenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacings.regular,
+    paddingVertical: spacings.medium,
+    borderBottomWidth: 1,
+  },
+  closeButton: {
+    padding: spacings.small,
+  },
+  fullScreenTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  placeholderView: {
+    width: 40,
+  },
+  fullScreenResultsContainer: {
+    flex: 1,
+  },
+  fullScreenResultsList: {
+    flex: 1,
+  },
+  fullScreenResultsContent: {
+    paddingBottom: spacings.large,
   },
   searchButton: {
     marginTop: spacings.medium,
