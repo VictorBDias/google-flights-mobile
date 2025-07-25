@@ -66,7 +66,7 @@ function AppContent() {
           avatar={user.avatar}
           sideElements={
             <TouchableOpacity onPress={handleLogout}>
-              <Icon name="logout" />
+              <Icon name="logout" color="red" />
             </TouchableOpacity>
           }
           style={{

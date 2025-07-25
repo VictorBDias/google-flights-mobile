@@ -28,7 +28,9 @@ export default function SignInScreen() {
 
   const onSubmit = handleSubmit(async ({ uid, password }) => {
     try {
+      console.log('Attempting to sign in with:', { uid, password });
       await login({ uid, password });
+      console.log('Sign in successful, user should be redirected');
       // Navigation will be handled automatically by the auth state change
     } catch (error) {
       console.error('Sign in failed:', error);

@@ -162,7 +162,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
   const [departureDate, setDepartureDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const [adults, setAdults] = useState(1);
   const [cabinClass, setCabinClass] = useState('economy');
 
   const handleOriginSelect = (airport: IAirport) => {
@@ -182,7 +181,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
       origin,
       destination,
       date: departureDate,
-      adults,
       cabinClass,
       ...(isRoundTrip && returnDate && { returnDate }),
     };
@@ -247,7 +245,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         />
       </View>
 
-      {/* Airport Selection */}
       <View style={styles.airportContainer}>
         <AirportSearch
           label="From"
@@ -270,7 +267,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         />
       </View>
 
-      {/* Date Selection */}
       <View style={styles.dateContainer}>
         <Typography
           variant="regular"
@@ -366,7 +362,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         </View>
       )}
 
-      {/* Cabin Class Dropdown */}
       <View style={styles.cabinContainer}>
         <Dropdown
           label="Cabin Class"
@@ -377,7 +372,6 @@ export const FlightSearchForm: React.FC<FlightSearchFormProps> = ({
         />
       </View>
 
-      {/* Search Button */}
       <Button
         content={isLoading ? 'Searching...' : 'Search Flights'}
         onPress={handleSearch}
@@ -414,7 +408,8 @@ const styles = StyleSheet.create({
   },
   swapButton: {
     alignSelf: 'center',
-    marginVertical: spacings.small,
+    marginVertical: spacings.regular,
+    marginBottom: -8,
     padding: spacings.small,
     borderRadius: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.05)',

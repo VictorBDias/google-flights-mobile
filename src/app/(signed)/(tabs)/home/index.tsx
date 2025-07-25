@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -36,8 +36,6 @@ export default function Home() {
     setLoading(true);
     clearError();
     setShowResults(true);
-
-    console.log(searchParams);
 
     try {
       const response = await searchFlightsApi(searchParams);
@@ -140,7 +138,6 @@ export default function Home() {
               </TouchableOpacity>
             </View>
 
-            {/* Results count */}
             {searchResults.length > 0 && (
               <Typography
                 variant="regular"
@@ -150,10 +147,8 @@ export default function Home() {
               </Typography>
             )}
 
-            {/* Error state */}
             {error && renderError()}
 
-            {/* Loading state */}
             {isLoading && (
               <View style={styles.loadingContainer}>
                 <Icon name="loader" size={32} color={colors.primary} />
@@ -166,7 +161,6 @@ export default function Home() {
               </View>
             )}
 
-            {/* Results */}
             {!isLoading && !error && (
               <FlatList
                 data={searchResults}

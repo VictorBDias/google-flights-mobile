@@ -35,18 +35,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = getItem('token');
-        const userData = getItem('user');
+        const token = await getItem('token');
+        const userData = await getItem('user');
 
-        if (token && userData) {
-          const parsedUser = JSON.parse(userData);
-          setUser(parsedUser);
+        if (token && userData && typeof userData === 'object') {
+          setUser(userData as IUser);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
         // Clear invalid data
-        removeItem('token');
-        removeItem('user');
+        await removeItem('token');
+        await removeItem('user');
       } finally {
         setIsLoading(false);
       }
@@ -63,8 +62,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     mutationKey: ['signin'],
     mutationFn: async (data: AuthValidator) => {
       const { token, user: apiUser } = await signInAPi(data);
-      setItem('user', JSON.stringify(apiUser));
-      setItem('token', token);
+      await setItem('user', apiUser);
+      await setItem('token', token);
       setUser(apiUser);
       return { token, user: apiUser };
     },
@@ -83,27 +82,28 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         email: data.email,
         password: data.password,
       });
-      setItem('user', JSON.stringify(apiUser));
-      setItem('token', token);
+      await setItem('user', apiUser);
+      await setItem('token', token);
       setUser(apiUser);
       return { token, user: apiUser };
     },
   });
 
-  const logout = useCallback(() => {
-    if (Boolean(containsItem('user'))) {
-      removeItem('user');
-      removeItem('token');
-      setUser(null);
-    }
+  const logout = useCallback(async () => {
+    await removeItem('user');
+    await removeItem('token');
+    setUser(null);
   }, []);
+
+  // Simplified isLogged logic - just check if user exists
+  const isLogged = Boolean(user);
 
   return (
     <AuthContext.Provider
       value={{
         login,
         signUp,
-        isLogged: Boolean(user) && Boolean(containsItem('user')),
+        isLogged,
         status: status === 'pending' ? 'pending' : signUpStatus,
         error: error || signUpError,
         user,

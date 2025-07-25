@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Modal,
   SafeAreaView,
   StatusBar,
@@ -34,6 +33,7 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
   value,
   onSelect,
   onTextChange,
+  ...rest
 }) => {
   const { colors } = useTheme();
   const [airports, setAirports] = useState<IAirport[]>([]);
@@ -46,8 +46,6 @@ export const AirportSearch: React.FC<AirportSearchProps> = ({
     width: 0,
     height: 0,
   });
-
-  const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
     if (value.length >= 2) {
